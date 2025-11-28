@@ -26,11 +26,12 @@ func main() {
 		dbFile = envDB
 	}
 
-	_, err := db.Init(dbFile)
+	dbConn, err := db.Init(dbFile)
 	if err != nil {
 		fmt.Printf("Ошибка инициализации БД: %v\n", err)
 		os.Exit(1)
 	}
+	defer dbConn.Close()
 	fmt.Printf("База данных '%s' готова.\n", dbFile)
 
 	mux := http.NewServeMux()

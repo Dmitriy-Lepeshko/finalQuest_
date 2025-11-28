@@ -54,6 +54,10 @@ func Tasks(limit int) ([]*Task, error) {
 		tasks = append(tasks, task)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating over rows: %w", err)
+	}
+
 	if tasks == nil {
 		tasks = []*Task{}
 	}

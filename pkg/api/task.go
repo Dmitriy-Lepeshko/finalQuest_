@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"firstIteration/pkg/db"
@@ -18,7 +19,7 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodDelete:
 		deleteTaskHandler(w, r)
 	default:
-		writeJson(w, map[string]string{"error": "method not allowed"})
+		writeJsonWithCode(w, map[string]string{"error": "method not allowed"}, http.StatusMethodNotAllowed)
 	}
 }
 
@@ -62,12 +63,13 @@ func putTaskHandler(w http.ResponseWriter, r *http.Request) {
 func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.FormValue("id")
 	if id == "" {
-		writeJson(w, map[string]string{"error": "id is required"})
+		writeJsonWithCode(w, map[string]string{"error": "id is required"}, http.StatusBadRequest)
 		return
 	}
 
 	if err := db.DeleteTask(id); err != nil {
-		writeJson(w, map[string]string{"error": err.Error()})
+		log.Printf("Ошибка удаления задачи: %v", err)
+		writeJsonWithCode(w, map[string]string{"error": err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
